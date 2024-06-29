@@ -1,29 +1,30 @@
 const express = require('express');
-const axios = require('axios');
 const app = express();
-const PORT = process.env.PORT || 8081;
+require('dotenv').config();
+require('./db');
+const PORT = process.env.PORT || 8080;
+const productRoutes = require('./routes/productRoutes');
+const userRoutes = require('./routes/userRoutes');
+app.use(express.json());
 
-app.get('/', async (req, res) => {
-  const username = req.query.username || 'myogeshchavan97';
-  try {
-    const result = await axios.get(
-      `https://api.github.com/users/${username}/repos`
-    );
-    const repos = result.data
-      .map((repo) => ({
-        name: repo.name,
-        url: repo.html_url,
-        description: repo.description,
-        stars: repo.stargazers_count
-      }))
-      .sort((a, b) => b.stars - a.stars);
-
-    res.send(repos);
-  } catch (error) {
-    res.status(400).send('Error while getting list of repositories');
-  }
+app.get('/', (req, res) => {
+    res.send('products api running new deploy');
+});
+app.get('/ping', (req, res) => {
+    res.send('<=PONG=>');
+});
+app.get('/country', (req, res) => {
+    res.send('<=INDIA=>');
 });
 
-app.listen(PORT, () => {
-  console.log(`server started on port ${PORT}`);
+app.get('/ping', (req, res) => {
+    res.send('PONG')
 });
+// /products
+app.use('/products', productRoutes);
+// /users
+app.use('/users', userRoutes);
+
+app.listen(8080, () => {
+    console.log('Server is listenin on PORT :' + PORT);
+})
